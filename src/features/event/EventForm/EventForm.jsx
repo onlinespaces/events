@@ -1,16 +1,18 @@
 import React, { Component } from 'react';
 import { Segment, Form, Button } from 'semantic-ui-react';
 
+const emptyEvent = {
+    title: '',
+    date: '',
+    city: '',
+    venue: '',
+    hostedBy: ''
+};
+
 class EventForm extends Component {
 
     state = {
-        event: {
-            title: '',
-            date: '',
-            city: '',
-            venue: '',
-            hostedBy: ''
-        }
+        event: emptyEvent
     };
 
     onInputChange = (event) => {
@@ -21,13 +23,29 @@ class EventForm extends Component {
         })
     };
 
+    componentDidMount() {
+        if(this.props.selectedEvent !== null) {
+            this.setState({
+                event: this.props.selectedEvent
+            })
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.selectedEvent !== this.props.selectedEvent) {
+            this.setState({
+                event: nextProps.selectedEvent || emptyEvent
+            });
+        }
+    }
+
     onFormSubmit = (event) => {
         event.preventDefault();
-        this.props.handleCreateEvent(this.state.event);
+        this.props.onCreateEvent(this.state.event);
     };
     
     render() {
-        const {handleFormCancel} = this.props;
+        const {onFormCancel} = this.props;
         const {event} = this.state;
 
         return (
@@ -71,7 +89,7 @@ class EventForm extends Component {
                     <Button positive type="submit">
                         Submit
                     </Button>
-                    <Button onClick={handleFormCancel} type="button">Cancel</Button>
+                    <Button onClick={onFormCancel} type="button">Cancel</Button>
                 </Form>
             </Segment>
         );
