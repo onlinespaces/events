@@ -55,25 +55,18 @@ const eventsData = [
 ]
 
 class EventDashboard extends Component {
-  constructor(props) {
-    super(props);
-    
-    this.state = {
-      events: eventsData,
-      isOpen: false
-    }
-
-    this.handleFormCancel = this.handleFormCancel.bind(this);
-    this.handleFormOpen = this.handleFormOpen.bind(this);
+  state = {
+    events: eventsData,
+    isOpen: false
   }
 
-  handleFormOpen() {
+  handleFormOpen = () => {
     this.setState({
       isOpen: true
     });
   }
 
-  handleFormCancel() {
+  handleFormCancel = () => {
     this.setState({
       isOpen: false
     });
