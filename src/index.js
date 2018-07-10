@@ -12,9 +12,9 @@ let render = () => {
     ReactDOM.render(
         <BrowserRouter>
             <App />
-        </BrowserRouter>
-        , rootElement);
-}
+        </BrowserRouter>,
+        rootElement);
+};
 
 if(module.hot) {
     module.hot.accept('./app/layout/App', () => {
