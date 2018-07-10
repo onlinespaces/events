@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Grid, Button } from 'semantic-ui-react';
 import EventList from '../../event/EventList/EventList';
 import EventForm from '../EventForm/EventForm';
 import cuid from 'cuid';
 
+const mapState = (state) => ({
+    events: state.events
+});
+
 class EventDashboard extends Component {
     state = {
-        events: eventsData,
         isOpen: false,
         selectedEvent: null
     };
@@ -64,10 +68,12 @@ class EventDashboard extends Component {
 
     render() {
         const {selectedEvent} = this.state;
+        const {events} = this.props;
+
         return (
             <Grid>
                 <Grid.Column width={10}>
-                    <EventList events={this.state.events} onEventOpen={this.handleOpenEvent} deleteEvent={this.handleDeleteEvent}/>
+                    <EventList events={events} onEventOpen={this.handleOpenEvent} deleteEvent={this.handleDeleteEvent}/>
                 </Grid.Column>
                 <Grid.Column width={6}>
                     <Button onClick={this.handleFormOpen} positive content='Create Event'/>
@@ -84,4 +90,4 @@ class EventDashboard extends Component {
     }
 }
 
-export default EventDashboard;
+export default connect(mapState)(EventDashboard);
