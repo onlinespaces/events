@@ -10,6 +10,7 @@ import TextInput from '../../../app/common/form/TextInput';
 import TextArea from '../../../app/common/form/TextArea';
 import SelectInput from '../../../app/common/form/SelectInput';
 import DateInput from '../../../app/common/form/DateInput';
+import PlaceInput from '../../../app/common/form/PlaceInput';
 
 const mapState = (state, ownProps) => {
 
@@ -100,11 +101,13 @@ class EventForm extends Component {
                                     content='Event Location Details'/>
                             <Field name='city'
                                    type='text'
-                                   component={TextInput}
+                                   component={PlaceInput}
+                                   options={{types: ['(cities)']}}
                                    placeholder='What city?'/>
                             <Field name='venue'
                                    type='text'
-                                   component={TextInput}
+                                   component={PlaceInput}
+                                   options={{types: ['establishment']}}
                                    placeholder='What venue?'/>
                             <Field name='date'
                                    type='text'
@@ -114,7 +117,7 @@ class EventForm extends Component {
                                    showTimeSelect
                                    placeholder='Date and Time of event.'/>
                             <Button onClick={this.props.history.goBack} type="button">Cancel</Button>
-                            <Button positive type="submit" disabled={invalid | submitting || pristine}>
+                            <Button positive type="submit" disabled={invalid || submitting || pristine}>
                                 Submit
                             </Button>
                         </Form>
