@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import cuid from 'cuid';
 import { Segment, Form, Button } from 'semantic-ui-react';
+import { createEvent, updateEvent } from '../eventActions';
 
 const mapState = (state, ownProps) => {
 
@@ -23,6 +25,11 @@ const mapState = (state, ownProps) => {
     }
 };
 
+const actions = {
+    createEvent,
+    updateEvent
+}
+
 class EventForm extends Component {
 
     state = {
@@ -32,6 +39,7 @@ class EventForm extends Component {
     onInputChange = (event) => {
         const newEvent = this.state.event;
         newEvent[event.target.name] = event.target.value;
+
         this.setState({
             event: newEvent
         })
@@ -42,13 +50,20 @@ class EventForm extends Component {
 
         if(this.state.event.id) {
             this.props.updateEvent(this.state.event);
+            this.props.history.goBack();
         } else {
-            this.props.onCreateEvent(this.state.event);
+            const newEvent = {
+                ...this.state.event,
+                id: cuid(),
+                hostPhotoURL: '/assets/user.png'
+            };
+
+            this.props.createEvent(newEvent);
+            this.props.history.push('/events');
         }
     };
     
     render() {
-        const {onFormCancel} = this.props;
         const {event} = this.state;
 
         return (
@@ -89,7 +104,7 @@ class EventForm extends Component {
                                value={event.hostedBy}
                                placeholder="Enter the name of person hosting" />
                     </Form.Field>
-                    <Button onClick={onFormCancel} type="button">Cancel</Button>
+                    <Button onClick={this.props.history.goBack} type="button">Cancel</Button>
                     <Button positive type="submit">
                         Submit
                     </Button>
@@ -99,4 +114,4 @@ class EventForm extends Component {
     }
 }
 
-export default connect(mapState)(EventForm);
+export default connect(mapState, actions)(EventForm);
