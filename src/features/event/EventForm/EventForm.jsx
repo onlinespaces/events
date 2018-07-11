@@ -1,18 +1,32 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Segment, Form, Button } from 'semantic-ui-react';
 
-const emptyEvent = {
-    title: '',
-    date: '',
-    city: '',
-    venue: '',
-    hostedBy: ''
+const mapState = (state, ownProps) => {
+
+    const eventId = ownProps.match.params.id;
+
+    let event = {
+        title: '',
+        date: '',
+        city: '',
+        venue: '',
+        hostedBy: ''
+    };
+
+    if(eventId && state.events.length > 0) {
+        event = state.events.filter(event => event.id === eventId)[0];
+    }
+
+    return {
+        event
+    }
 };
 
 class EventForm extends Component {
 
     state = {
-        event: emptyEvent
+        event: Object.assign({}, this.props.event)
     };
 
     onInputChange = (event) => {
@@ -22,22 +36,6 @@ class EventForm extends Component {
             event: newEvent
         })
     };
-
-    componentDidMount() {
-        if(this.props.selectedEvent !== null) {
-            this.setState({
-                event: this.props.selectedEvent
-            })
-        }
-    }
-
-    componentWillReceiveProps(nextProps) {
-        if(nextProps.selectedEvent !== this.props.selectedEvent) {
-            this.setState({
-                event: nextProps.selectedEvent || emptyEvent
-            });
-        }
-    }
 
     onFormSubmit = (event) => {
         event.preventDefault();
@@ -91,15 +89,14 @@ class EventForm extends Component {
                                value={event.hostedBy}
                                placeholder="Enter the name of person hosting" />
                     </Form.Field>
+                    <Button onClick={onFormCancel} type="button">Cancel</Button>
                     <Button positive type="submit">
                         Submit
                     </Button>
-                    <Button onClick={onFormCancel} type="button">Cancel</Button>
                 </Form>
             </Segment>
         );
     }
 }
 
-
-export default  EventForm;
+export default connect(mapState)(EventForm);
