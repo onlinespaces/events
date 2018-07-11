@@ -77,12 +77,27 @@ class EventForm extends Component {
         ;
     };
 
+    handleVenueSelect = (selectedVenue) => {
+        geocodeByAddress(selectedVenue)
+            .then(results => getLatLng(results[0]))
+            .then(latLong => {
+                this.setState({
+                    venueLatLong: latLong
+                })
+            })
+            .then(() => {
+                this.props.change('venue', selectedVenue)
+            })
+        ;
+    };
+
     handleScriptLoaded = () => {
         this.setState({scriptLoaded: true});
     };
 
     onFormSubmit = (values) => {
         values.date = moment(values.date).format();
+        values.venueLatLong = this.state.venueLatLong;
 
         if(this.props.initialValues.id) {
             this.props.updateEvent(values);
@@ -147,7 +162,8 @@ class EventForm extends Component {
                                            types: ['establishment']
                                        }}
                                        placeholder='What venue?'
-                                />
+                                       onSelect={this.handleVenueSelect}
+                            />
                             }
                             <Field name='date'
                                    type='text'
