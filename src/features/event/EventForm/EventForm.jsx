@@ -1,7 +1,10 @@
+/*global google*/
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, Field } from 'redux-form';
+import Script from 'react-load-script';
 import moment from 'moment';
+import { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import { combineValidators, composeValidators, isRequired, hasLengthGreaterThan } from 'revalidate';
 import cuid from 'cuid';
 import { Segment, Form, Button, Grid, Header } from 'semantic-ui-react';
@@ -54,6 +57,30 @@ const validate = combineValidators({
 });
 
 class EventForm extends Component {
+    state = {
+        cityLatLong: {},
+        venueLatLong: {},
+        scriptLoaded: false
+    };
+
+    handleCitySelect = (selectedCity) => {
+        geocodeByAddress(selectedCity)
+            .then(results => getLatLng(results[0]))
+            .then(latLong => {
+                this.setState({
+                    cityLatLong: latLong
+                })
+            })
+            .then(() => {
+                this.props.change('city', selectedCity)
+            })
+        ;
+    };
+
+    handleScriptLoaded = () => {
+        this.setState({scriptLoaded: true});
+    };
+
     onFormSubmit = (values) => {
         values.date = moment(values.date).format();
 
@@ -78,6 +105,10 @@ class EventForm extends Component {
 
         return (
             <Grid>
+                <Script
+                    url='https://maps.googleapis.com/maps/api/js?key=AIzaSyCyEQybmKIrSEArl0KSMPvtzu8VmfoVxtA&libraries=places'
+                    onLoad={this.handleScriptLoaded}
+                />
                 <Grid.Column width={10}>
                     <Segment>
                         <Form onSubmit={this.props.handleSubmit(this.onFormSubmit)}>
@@ -103,12 +134,21 @@ class EventForm extends Component {
                                    type='text'
                                    component={PlaceInput}
                                    options={{types: ['(cities)']}}
-                                   placeholder='What city?'/>
-                            <Field name='venue'
-                                   type='text'
-                                   component={PlaceInput}
-                                   options={{types: ['establishment']}}
-                                   placeholder='What venue?'/>
+                                   placeholder='What city?'
+                                   onSelect={this.handleCitySelect}
+                            />
+                            {this.state.scriptLoaded &&
+                                <Field name='venue'
+                                       type='text'
+                                       component={PlaceInput}
+                                       options={{
+                                           location: new google.maps.LatLng(this.state.cityLatLong),
+                                           radius: 1000,
+                                           types: ['establishment']
+                                       }}
+                                       placeholder='What venue?'
+                                />
+                            }
                             <Field name='date'
                                    type='text'
                                    component={DateInput}
