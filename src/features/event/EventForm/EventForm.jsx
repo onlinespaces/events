@@ -8,6 +8,7 @@ import { createEvent, updateEvent } from '../eventActions';
 import TextInput from '../../../app/common/form/TextInput';
 import TextArea from '../../../app/common/form/TextArea';
 import SelectInput from '../../../app/common/form/SelectInput';
+import DateInput from '../../../app/common/form/DateInput';
 
 const mapState = (state, ownProps) => {
 
@@ -103,8 +104,11 @@ class EventForm extends Component {
                                    placeholder='What venue?'/>
                             <Field name='date'
                                    type='text'
-                                   component={TextInput}
-                                   placeholder='When is your event?'/>
+                                   component={DateInput}
+                                   dateFormat='YYYY/MM/DD HH:mm'
+                                   timeFormat='HH:mm'
+                                   showTimeSelect
+                                   placeholder='Date and Time of event.'/>
                             <Button onClick={this.props.history.goBack} type="button">Cancel</Button>
                             <Button positive type="submit" disabled={invalid | submitting || pristine}>
                                 Submit
