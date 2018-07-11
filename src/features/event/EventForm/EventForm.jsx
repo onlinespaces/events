@@ -58,17 +58,17 @@ const validate = combineValidators({
 
 class EventForm extends Component {
     state = {
-        cityLatLong: {},
-        venueLatLong: {},
+        cityLatLng: {},
+        venueLatLng: {},
         scriptLoaded: false
     };
 
     handleCitySelect = (selectedCity) => {
         geocodeByAddress(selectedCity)
             .then(results => getLatLng(results[0]))
-            .then(latLong => {
+            .then(latLng => {
                 this.setState({
-                    cityLatLong: latLong
+                    cityLatLng: latLng
                 })
             })
             .then(() => {
@@ -80,9 +80,9 @@ class EventForm extends Component {
     handleVenueSelect = (selectedVenue) => {
         geocodeByAddress(selectedVenue)
             .then(results => getLatLng(results[0]))
-            .then(latLong => {
+            .then(latLng => {
                 this.setState({
-                    venueLatLong: latLong
+                    venueLatLng: latLng
                 })
             })
             .then(() => {
@@ -97,7 +97,7 @@ class EventForm extends Component {
 
     onFormSubmit = (values) => {
         values.date = moment(values.date).format();
-        values.venueLatLong = this.state.venueLatLong;
+        values.venueLatLng = this.state.venueLatLng;
 
         if(this.props.initialValues.id) {
             this.props.updateEvent(values);
@@ -157,7 +157,7 @@ class EventForm extends Component {
                                        type='text'
                                        component={PlaceInput}
                                        options={{
-                                           location: new google.maps.LatLng(this.state.cityLatLong),
+                                           location: new google.maps.LatLng(this.state.cityLatLng),
                                            radius: 1000,
                                            types: ['establishment']
                                        }}
