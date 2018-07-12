@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Grid } from 'semantic-ui-react';
 import EventList from '../../event/EventList/EventList';
+import EventActivity from '../../event/EventActivity/EventActivity';
 import { deleteEvent} from "../eventActions";
 import LoadingComponent from '../../../app/layout/LoadingComponent';
 
@@ -28,6 +29,7 @@ class EventDashboard extends Component {
                     <EventList deleteEvent={this.handleDeleteEvent} events={events} />
                 </Grid.Column>
                 <Grid.Column width={6}>
+                    <EventActivity/>
                 </Grid.Column>
             </Grid>
         );
