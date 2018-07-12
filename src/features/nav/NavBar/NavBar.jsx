@@ -7,11 +7,9 @@ import SignedOutMenu from '../Menus/SignedOutMenu';
 import SignedInMenu from '../Menus/SignedInMenu';
 import AuxWrapper from '../../../app/common/hoc/AuxWrapper';
 import { openModal } from '../../modals/modalActions';
-import { logout } from '../../auth/authActions';
 
 const actions = {
-    openModal,
-    logout
+    openModal
 };
 
 const mapState = (state) => ({
