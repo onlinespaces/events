@@ -9,7 +9,8 @@ import rootReducer from '../reducers/rootReducer';
 const rrfConfig = {
     userProfile: 'users',
     attachAuthIsReady: true,
-    useFirestoreForProfile: true
+    useFirestoreForProfile: true,
+    updateProfileOnLogin: false
 };
 
 const configureStore = (preloadedState) => {
