@@ -59,7 +59,7 @@ class NavBar extends Component {
                     <Menu.Item as={NavLink} to='/test' name="Test" />
                     {authenticatedMenu}
                     {authenticated ?
-                        <SignedInMenu profile={profile} signOut={this.handleSignOut}/>
+                        <SignedInMenu auth={auth} profile={profile} signOut={this.handleSignOut}/>
                         :
                         <SignedOutMenu signIn={this.handleSignIn} register={this.handleRegister}/>}
                 </Container>
