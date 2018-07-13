@@ -7,10 +7,11 @@ import {Image, Segment, Header, Divider, Grid, Button, Card, Icon} from 'semanti
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import Dropzone from 'react-dropzone';
-import { uploadProfileImage } from '../userActions';
+import { uploadProfileImage, deletePhoto } from '../userActions';
 
 const actions = {
-    uploadProfileImage
+    uploadProfileImage,
+    deletePhoto
 };
 
 class PhotosPage extends Component {
@@ -21,13 +22,22 @@ class PhotosPage extends Component {
         image: {}
     };
 
+    handlePhotoDelete = (photo) => () => {
+        try {
+            this.props.deletePhoto(photo);
+        } catch(error) {
+            toastr.error('Error!', error.message);
+        }
+
+    };
+
     uploadImage = async () => {
         try {
             await this.props.uploadProfileImage(this.state.image, this.state.fileName);
             this.cancelCrop();
             toastr.success('Success!', 'Photo has been updated');
         } catch (e) {
-            toastr.success('Error!', e.message);
+            toastr.error('Error!', e.message);
         }
     };
 
@@ -134,7 +144,7 @@ class PhotosPage extends Component {
                             />
                             <div className='ui two buttons'>
                                 <Button basic color='green'>Main</Button>
-                                <Button basic icon='trash' color='red' />
+                                <Button onClick={this.handlePhotoDelete(photo)} basic icon='trash' color='red' />
                             </div>
                         </Card>
 
