@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { toastr } from 'react-redux-toastr';
+import cuid from 'cuid';
 
 export const updateProfile = (user) =>
     async(dispatch, getState, {getFirebase}) => {
@@ -23,21 +24,25 @@ export const updateProfile = (user) =>
 
 export const uploadProfileImage = (file, fileName) =>
     async (dispatch, getState, {getFirebase, getFirestore}) => {
+        const imageName = cuid();
         const firebase = getFirebase();
         const firestore = getFirestore();
-        // Is sycronous
+        // Is syncronous
         const user = firebase.auth().currentUser;
         const path = `${user.uid}/user_images`;
+
         const options = {
-            name: fileName
+            name: imageName
         };
 
         try {
             // upload the file to firebase
             let uploadedFile = await firebase.uploadFile(path, file, null, options);
+
             // get url of image
             let downloadURL = await uploadedFile.uploadTaskSnaphot.downloadURL;
             let userDoc = await firestore.get(`users/${user.uid}`);
+
             // Get user doc and see if user already has a photo. If not, then set as main.
             if(userDoc.data().photoURL) {
                 await firebase.updateProfile({
@@ -54,7 +59,7 @@ export const uploadProfileImage = (file, fileName) =>
                 doc: user.uid,
                 subcollections: [{collection: 'photos'}]
             }, {
-                name: fileName,
+                name: imageName,
                 url: downloadURL
             })
         } catch(error) {
