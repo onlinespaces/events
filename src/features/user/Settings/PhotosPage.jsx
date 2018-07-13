@@ -7,11 +7,12 @@ import {Image, Segment, Header, Divider, Grid, Button, Card, Icon} from 'semanti
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import Dropzone from 'react-dropzone';
-import { uploadProfileImage, deletePhoto } from '../userActions';
+import { uploadProfileImage, deletePhoto, setMainPhoto } from '../userActions';
 
 const actions = {
     uploadProfileImage,
-    deletePhoto
+    deletePhoto,
+    setMainPhoto
 };
 
 class PhotosPage extends Component {
@@ -22,13 +23,20 @@ class PhotosPage extends Component {
         image: {}
     };
 
-    handlePhotoDelete = (photo) => () => {
+    handlePhotoDelete = (photo) => async () => {
         try {
             this.props.deletePhoto(photo);
         } catch(error) {
             toastr.error('Error!', error.message);
         }
+    };
 
+    handleSetMainPhoto = (photo) => async () => {
+        try {
+            this.props.setMainPhoto(photo);
+        } catch(error) {
+            toastr.error('Error!', error.message);
+        }
     };
 
     uploadImage = async () => {
@@ -70,7 +78,8 @@ class PhotosPage extends Component {
     };
 
     render() {
-        const {photos, profile} = this.props;
+        const {photos, profile, loading} = this.props;
+
         let filteredPhotos;
 
         if(photos) {
@@ -119,8 +128,16 @@ class PhotosPage extends Component {
                             <div>
                                 <Image style={{minHeight: '200px', minWidth: '200px'}} src={this.state.cropResult}/>
                                 <Button.Group>
-                                    <Button onClick={this.uploadImage} style={{width: '100px'}} positive icon='check'/>
-                                    <Button onClick={this.cancelCrop} style={{width: '100px'}} icon='close'/>
+                                    <Button
+                                        loading={loading}
+                                        onClick={this.uploadImage}
+                                        style={{width: '100px'}}
+                                        positive icon='check'/>
+                                    <Button
+                                        disabled={loading}
+                                        onClick={this.cancelCrop}
+                                        style={{width: '100px'}}
+                                        icon='close'/>
                                 </Button.Group>
                             </div>
                         }
@@ -143,7 +160,7 @@ class PhotosPage extends Component {
                                 src={photo.url}
                             />
                             <div className='ui two buttons'>
-                                <Button basic color='green'>Main</Button>
+                                <Button onClick={this.handleSetMainPhoto(photo)} basic color='green'>Main</Button>
                                 <Button onClick={this.handlePhotoDelete(photo)} basic icon='trash' color='red' />
                             </div>
                         </Card>
@@ -159,7 +176,8 @@ class PhotosPage extends Component {
 const mapState = (state) => ({
     auth: state.firebase.auth,
     profile: state.firebase.profile,
-    photos: state.firestore.ordered.photos
+    photos: state.firestore.ordered.photos,
+    loading: state.async.loading
 });
 
 const query = ({auth}) => {

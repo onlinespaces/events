@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { toastr } from 'react-redux-toastr';
 import cuid from 'cuid';
+import { asyncActionFinish, asyncActionStart, asyncActionError } from '../async/asyncActions';
 
 export const updateProfile = (user) =>
     async(dispatch, getState, {getFirebase}) => {
@@ -36,6 +37,7 @@ export const uploadProfileImage = (file, fileName) =>
         };
 
         try {
+            dispatch(asyncActionStart());
             // upload the file to firebase
             let uploadedFile = await firebase.uploadFile(path, file, null, options);
 
@@ -54,7 +56,7 @@ export const uploadProfileImage = (file, fileName) =>
                 });
             }
             // Add new photo as new image in photos collection
-            return await firestore.add({
+            await firestore.add({
                 collection: 'users',
                 doc: user.uid,
                 subcollections: [{collection: 'photos'}]
@@ -62,8 +64,10 @@ export const uploadProfileImage = (file, fileName) =>
                 name: imageName,
                 url: downloadURL
             })
+            dispatch(asyncActionFinish());
         } catch(error) {
             console.log(error);
+            dispatch(asyncActionError());
             throw new Error("Problem uploading photo.");
         }
     };
@@ -84,5 +88,19 @@ export const deletePhoto = (photo) =>
             });
         } catch(error) {
             throw new Error("Problem deleting photo.");
+        }
+    };
+
+export const setMainPhoto = photo =>
+    async (dispatch, getState, {getFirebase}) => {
+        const firebase = getFirebase();
+
+        try {
+            return await firebase.updateProfile({
+                photoURL: photo.url
+            })
+        } catch(error) {
+            console.log(error);
+            throw new Error("Problem setting main photo photo.");
         }
     };
