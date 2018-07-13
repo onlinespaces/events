@@ -27,7 +27,7 @@ export const uploadProfileImage = (file, fileName) =>
         const firestore = getFirestore();
         // Is sycronous
         const user = firebase.auth().currentUser;
-        const path = `${user.id}/user_images`;
+        const path = `${user.uid}/user_images`;
         const options = {
             name: fileName
         };
@@ -37,7 +37,7 @@ export const uploadProfileImage = (file, fileName) =>
             let uploadedFile = await firebase.uploadFile(path, file, null, options);
             // get url of image
             let downloadURL = await uploadedFile.uploadTaskSnaphot.downloadURL;
-            let userDoc = await firestore.get(`users/${user.id}`);
+            let userDoc = await firestore.get(`users/${user.uid}`);
             // Get user doc and see if user already has a photo. If not, then set as main.
             if(userDoc.data().photoURL) {
                 await firebase.updateProfile({
