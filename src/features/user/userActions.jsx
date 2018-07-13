@@ -5,12 +5,15 @@ export const updateProfile = (user) =>
     async(dispatch, getState, {getFirebase}) => {
         const firebase = getFirebase();
 
-        if(user.dateOfBirth) {
-            user.dateOfBirth = moment(user.dateOfBirth).toDate();
+        // Omits isLoaded and isEmpty
+        const {isLoaded, isEmpty, ...updatedUser} = user;
+
+        if(updatedUser.dateOfBirth !== getState().firebase.profile.dateOfBirth) {
+            updatedUser.dateOfBirth = moment(updatedUser.dateOfBirth).toDate();
         }
 
         try {
-            await firebase.updateProfile(user);
+            await firebase.updateProfile(updatedUser);
             toastr.success('Success', 'Profile updated.');
 
         } catch(error) {
