@@ -1,19 +1,16 @@
 import React from 'react';
-import {Header, Image} from "semantic-ui-react";
+import {Header, Image, Segment} from "semantic-ui-react";
 
 const UserDetailedPhotos = ({photos}) => {
     return (
-        <div>
+        <Segment attached>
             <Header icon='image' content='Photos'/>
-            {photos &&
-            < Image.Group size='small' >
-                {photos.map((photo) =>
-                    <Image key={photo.id} src={photo.url}/>
-                )}
-            </Image.Group>
-            }
-            )
-        </div>
+                < Image.Group size='small' >
+                    {photos.map((photo) =>
+                        <Image key={photo.id} src={photo.url}/>
+                    )}
+                </Image.Group>
+        </Segment>
     )};
 
 export default UserDetailedPhotos;

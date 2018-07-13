@@ -1,31 +1,38 @@
 import React from 'react';
-import { Grid, Item, Header, Icon, List } from "semantic-ui-react";
+import { Grid, Item, Header, Icon, List, Segment } from "semantic-ui-react";
+import format from 'date-fns/format';
 
 const UserDetailedDescription = ({profile}) => {
-    return (
-        <Grid columns={2}>
-            <Grid.Column width={10}>
-                <Header icon='smile' content='About Display Name'/>
-                <p>I am a: <strong>{profile.occupation}</strong></p>
-                <p>Originally from <strong>{profile.origin}</strong></p>
-                <p>Member Since: <strong>28th March 2018</strong></p>
-                <p>{profile.about}</p>
-            </Grid.Column>
-            <Grid.Column width={6}>
+    let createdAt;
 
-                <Header icon='heart outline' content='Interests'/>
-                {profile.interests &&
-                <List>
-                    {profile.interests.map((interest) =>
-                        <Item  key={interest}>
-                            <Icon name='heart'/>
-                            <Item.Content>{interest}</Item.Content>
-                        </Item>
-                    )}
-                </List>
-                }
-            </Grid.Column>
-        </Grid>
+    if(profile.createdAt) {
+        createdAt = format(profile.createdAt.toDate(), 'D MMM YYYY')
+    }
+    return (
+        <Segment>
+            <Grid columns={2}>
+                <Grid.Column width={10}>
+                    <Header icon='smile' content='About Display Name'/>
+                    <p>I am a: <strong>{profile.occupation  || 'tbd'}</strong></p>
+                    <p>Originally from <strong>{profile.origin || 'tbd'}</strong></p>
+                    <p>Member Since: <strong>{createdAt}</strong></p>
+                    <p>{profile.about}</p>
+                </Grid.Column>
+                <Grid.Column width={6}>
+                    <Header icon='heart outline' content='Interests'/>
+                    {profile.interests ?
+                        <List>
+                            {profile.interests.map((interest) =>
+                                <Item key={interest}>
+                                    <Icon name='heart'/>
+                                    <Item.Content>{interest}</Item.Content>
+                                </Item>
+                            )}
+                        </List> : <p>No Interests</p>
+                    }
+                </Grid.Column>
+            </Grid>
+        </Segment>
     )
 };
 

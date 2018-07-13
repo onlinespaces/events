@@ -1,10 +1,13 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import {Button, Card, Grid, Header, Image, Menu, Segment} from "semantic-ui-react";
-import {Link} from "react-router-dom";
+import { firestoreConnect } from 'react-redux-firebase';
+import {compose} from 'redux';
+import {Grid, Segment} from "semantic-ui-react";
 import UserDetailedHeader from './UserDetailedHeader';
 import UserDetailedDescription from './UserDetailedDescription';
 import UserDetailedPhotos from './UserDetailedPhotos';
+import UserDetailedSidebar from './UserDetailedSidebar';
+import UserDetailedEvents from './UserDetailedEvents';
 
 class UserDetailedPage extends Component {
 
@@ -13,66 +16,21 @@ class UserDetailedPage extends Component {
         return (
             <Grid>
                 <Grid.Column width={16}>
-                    <Segment>
-                        <UserDetailedHeader profile={profile}/>
-                    </Segment>
+                    <UserDetailedHeader profile={profile}/>
                 </Grid.Column>
                 <Grid.Column width={12}>
-                    <Segment>
-                        <UserDetailedDescription profile={profile}/>
-
-                    </Segment>
+                    <UserDetailedDescription profile={profile}/>
                 </Grid.Column>
                 <Grid.Column width={4}>
-                    <Segment>
-                        <Button as={Link} to='/settings' color='teal' fluid basic content='Edit Profile'/>
-                    </Segment>
+                    <UserDetailedSidebar />
                 </Grid.Column>
-
-                <Grid.Column width={12}>
-                    <Segment attached>
+                {photos &&
+                    <Grid.Column width={12}>
                         <UserDetailedPhotos photos={photos}/>
-                    </Segment>
-                </Grid.Column>
-
+                    </Grid.Column>
+                }
                 <Grid.Column width={12}>
-                    <Segment attached>
-                        <Header icon='calendar' content='Events'/>
-                        <Menu secondary pointing>
-                            <Menu.Item name='All Events' active/>
-                            <Menu.Item name='Past Events'/>
-                            <Menu.Item name='Future Events'/>
-                            <Menu.Item name='Events Hosted'/>
-                        </Menu>
-
-                        <Card.Group itemsPerRow={5}>
-
-                            <Card>
-                                <Image src={'/assets/categoryImages/drinks.jpg'}/>
-                                <Card.Content>
-                                    <Card.Header textAlign='center'>
-                                        Event Title
-                                    </Card.Header>
-                                    <Card.Meta textAlign='center'>
-                                        28th March 2018 at 10:00 PM
-                                    </Card.Meta>
-                                </Card.Content>
-                            </Card>
-
-                            <Card>
-                                <Image src={'/assets/categoryImages/drinks.jpg'}/>
-                                <Card.Content>
-                                    <Card.Header textAlign='center'>
-                                        Event Title
-                                    </Card.Header>
-                                    <Card.Meta textAlign='center'>
-                                        28th March 2018 at 10:00 PM
-                                    </Card.Meta>
-                                </Card.Content>
-                            </Card>
-
-                        </Card.Group>
-                    </Segment>
+                    <UserDetailedEvents/>
                 </Grid.Column>
             </Grid>
 
@@ -80,9 +38,22 @@ class UserDetailedPage extends Component {
     }
 }
 
+const query = ({auth}) => {
+    return [{
+        collection: 'users',
+        doc: auth.uid,
+        subcollections: [{collection: 'photos'}],
+        storeAs: 'photos'
+    }]
+};
+
 const mapState = (state) => ({
     profile: state.firebase.profile,
     photos: state.firestore.ordered.photos,
+    auth: state.firebase.auth
 });
 
-export default connect(mapState)(UserDetailedPage);
+export default compose(
+    connect(mapState),
+    firestoreConnect(auth => query(auth))
+)(UserDetailedPage);
