@@ -22,6 +22,12 @@ class EventDetailedInfo extends Component{
 
     render() {
         const {event} = this.props;
+
+        let eventDate;
+
+        if(event.date) {
+            eventDate = event.date.toDate();
+        }
         return (
             <Segment.Group>
                 <Segment attached="top">
@@ -30,7 +36,9 @@ class EventDetailedInfo extends Component{
                             <Icon size="large" color="teal" name="info"/>
                         </Grid.Column>
                         <Grid.Column width={15}>
-                            <p>{event.description}</p>
+                            {event &&
+                                <p>{event.description}</p>
+                            }
                         </Grid.Column>
                     </Grid>
                 </Segment>
@@ -40,7 +48,9 @@ class EventDetailedInfo extends Component{
                             <Icon name="calendar" size="large" color="teal"/>
                         </Grid.Column>
                         <Grid.Column width={15}>
-                            <span>{format(event.date.toDate(), 'dddd Do MMMM')} at{' '} {format(event.date.toDate(), 'HH:mm')}</span>
+                            {event && event.date &&
+                                <span>{format(eventDate, 'dddd Do MMMM')} at{' '} {format(eventDate, 'HH:mm')}</span>
+                            }
                         </Grid.Column>
                     </Grid>
                 </Segment>
@@ -50,7 +60,9 @@ class EventDetailedInfo extends Component{
                             <Icon name="marker" size="large" color="teal"/>
                         </Grid.Column>
                         <Grid.Column width={11}>
+                            {event &&
                             <span>{event.venue}</span>
+                            }
                         </Grid.Column>
                         <Grid.Column width={4}>
                             <Button color="teal"
@@ -60,7 +72,7 @@ class EventDetailedInfo extends Component{
                         </Grid.Column>
                     </Grid>
                 </Segment>
-                {this.state.showMap &&
+                {this.state.showMap && event &&
                     <EventDetailedMap
                         lat={event.venueLatLng.lat}
                         long={event.venueLatLng.lng}
