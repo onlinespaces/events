@@ -4,11 +4,10 @@ import { connect } from 'react-redux';
 import { withFirestore } from 'react-redux-firebase';
 import { reduxForm, Field } from 'redux-form';
 import Script from 'react-load-script';
-import moment from 'moment';
 import { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import { combineValidators, composeValidators, isRequired, hasLengthGreaterThan } from 'revalidate';
 import { Segment, Form, Button, Grid, Header } from 'semantic-ui-react';
-import { createEvent, updateEvent } from '../eventActions';
+import { createEvent, updateEvent, cancelToggle } from '../eventActions';
 import TextInput from '../../../app/common/form/TextInput';
 import TextArea from '../../../app/common/form/TextArea';
 import SelectInput from '../../../app/common/form/SelectInput';
@@ -23,13 +22,15 @@ const mapState = (state) => {
     }
 
     return {
-        initialValues: event
+        initialValues: event,
+        event
     }
 };
 
 const actions = {
     createEvent,
-    updateEvent
+    updateEvent,
+    cancelToggle
 };
 
 const category = [
@@ -115,7 +116,7 @@ class EventForm extends Component {
     };
     
     render() {
-        const {invalid, submitting, pristine} = this.props;
+        const {invalid, submitting, pristine, event, cancelToggle} = this.props;
 
         return (
             <Grid>
@@ -171,8 +172,18 @@ class EventForm extends Component {
                                    timeFormat='HH:mm'
                                    showTimeSelect
                                    placeholder='Date and Time of event.'/>
-                            <Button onClick={this.props.history.goBack} type="button">Cancel</Button>
-                            <Button positive type="submit" disabled={invalid || submitting || pristine}>
+                            <Button
+                                onClick={this.props.history.goBack}
+                                type="button">Cancel</Button>
+                            <Button
+                                color={event.cancelled ? 'green' : 'red'}
+                                floated='left'
+                                onClick={() => cancelToggle(!event.cancelled, event.id)}
+                                type="button">{event.cancelled ? 'Reactivate Event' : 'Cancel Event'}</Button>
+                            <Button
+                                positive type="submit"
+                                floated='right'
+                                disabled={invalid || submitting || pristine}>
                                 Submit
                             </Button>
                         </Form>

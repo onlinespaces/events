@@ -1,6 +1,6 @@
 import { toastr } from 'react-redux-toastr';
 import moment from 'moment';
-import { DELETE_EVENT, UPDATE_EVENT, FETCH_EVENTS} from "./eventConstants";
+import { DELETE_EVENT, FETCH_EVENTS} from "./eventConstants";
 import { asyncActionError, asyncActionStart, asyncActionFinish } from "../async/asyncActions";
 import { fetchSampleData} from '../../app/data/mockApi';
 import { createNewEvent } from '../../app/common/util/helpers';
@@ -51,6 +51,18 @@ export const deleteEvent = (eventId) => {
         }
     }
 };
+
+export const cancelToggle = (cancelled, eventId) =>
+    async (dispatch, getState, {getFirestore}) => {
+        const firestore = getFirestore();
+        try {
+            await firestore.update(`events/${eventId}`, {
+                cancelled: cancelled
+            });
+        } catch(error) {
+            console.log(error);
+        }
+    };
 
 export const fetchEvents = (events) => {
     return {
