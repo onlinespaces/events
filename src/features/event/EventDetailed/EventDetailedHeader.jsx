@@ -2,6 +2,7 @@ import React from 'react';
 import { Segment, Item, Button, Header, Image } from 'semantic-ui-react';
 import format from 'date-fns/format';
 import { Link } from 'react-router-dom';
+import AuxWrapper from '../../../app/common/hoc/AuxWrapper';
 
 const eventImageStyle = {
     filter: 'brightness(30%)'
@@ -16,7 +17,7 @@ const eventImageTextStyle = {
     color: 'white'
 };
 
-const EventDetailedHeader = ({event}) => {
+const EventDetailedHeader = ({event, isHost, isGoing, goingToEvent, cancelGoingToEvent}) => {
     let eventDate;
 
     if(event.date) {
@@ -52,12 +53,18 @@ const EventDetailedHeader = ({event}) => {
             </Segment>
 
             <Segment attached="bottom">
-                <Button>Cancel My Place</Button>
-                <Button color="teal">JOIN THIS EVENT</Button>
-                {event &&
-                    <Button as={Link} to={`/manage/${event.id}`} color="orange" floated="right">
+                {!isHost &&
+                    <AuxWrapper>
+                        {isGoing ?
+                            <Button onClick={() => cancelGoingToEvent(event)}>Cancel My Place</Button> :
+                            <Button onClick={() => goingToEvent(event)} color="teal">JOIN THIS EVENT</Button>
+                        }
+                    </AuxWrapper>
+                }
+                {isHost &&
+                    <Button as={Link} to={`/manage/${event.id}`} color="orange">
                         Manage Event
-                </Button>
+                    </Button>
                 }
             </Segment>
         </Segment.Group>
