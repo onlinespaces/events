@@ -2,10 +2,14 @@ import React from 'react';
 import {Link} from "react-router-dom";
 import {Button, Segment} from "semantic-ui-react";
 
-const UserDetailedSidebar = () => {
+const UserDetailedSidebar = ({isCurrentUser}) => {
     return (
         <Segment>
-            <Button as={Link} to='/settings' color='teal' fluid basic content='Edit Profile'/>
+            {isCurrentUser ?
+                <Button as={Link} to='/settings' color='teal' fluid basic content='Edit Profile'/>
+                :
+                <Button color='teal' fluid basic content='Follow User'/>
+            }
         </Segment>
     )};
 

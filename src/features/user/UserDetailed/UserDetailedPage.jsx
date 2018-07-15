@@ -11,9 +11,9 @@ import UserDetailedSidebar from './UserDetailedSidebar';
 import UserDetailedEvents from './UserDetailedEvents';
 
 class UserDetailedPage extends Component {
-
     render() {
-        const { photos, profile } = this.props;
+        const { photos, profile, auth, match } = this.props;
+        const isCurrentUser = auth.uid === match.params.id;
         return (
             <Grid>
                 <Grid.Column width={16}>
@@ -23,7 +23,7 @@ class UserDetailedPage extends Component {
                     <UserDetailedDescription profile={profile}/>
                 </Grid.Column>
                 <Grid.Column width={4}>
-                    <UserDetailedSidebar />
+                    <UserDetailedSidebar isCurrentUser={isCurrentUser }/>
                 </Grid.Column>
                 {photos &&
                     <Grid.Column width={12}>
