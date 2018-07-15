@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import { firestoreConnect } from 'react-redux-firebase';
+import { firestoreConnect, isEmpty } from 'react-redux-firebase';
 import {compose} from 'redux';
 import {Grid} from "semantic-ui-react";
+import { userDetailedQuery } from '../userQueries';
 import UserDetailedHeader from './UserDetailedHeader';
 import UserDetailedDescription from './UserDetailedDescription';
 import UserDetailedPhotos from './UserDetailedPhotos';
@@ -38,22 +39,25 @@ class UserDetailedPage extends Component {
     }
 }
 
-const query = ({auth}) => {
-    return [{
-        collection: 'users',
-        doc: auth.uid,
-        subcollections: [{collection: 'photos'}],
-        storeAs: 'photos'
-    }]
-};
+const mapState = (state, ownProps) => {
+    let userUid = null;
+    let profile = {};
 
-const mapState = (state) => ({
-    profile: state.firebase.profile,
-    photos: state.firestore.ordered.photos,
-    auth: state.firebase.auth
-});
+    if(ownProps.match.params.id === state.auth.id) {
+        profile = state.firebase.profile;
+    } else {
+        profile = !isEmpty(state.firestore.ordered.profile) && state.firestore.ordered.profile[0];
+        userUid = ownProps.match.params.id;
+    }
+    return {
+        profile,
+        userUid,
+        photos: state.firestore.ordered.photos,
+        auth: state.firebase.auth
+    }
+};
 
 export default compose(
     connect(mapState),
-    firestoreConnect(auth => query(auth))
+    firestoreConnect((auth, userUid) => userDetailedQuery(auth, userUid))
 )(UserDetailedPage);
