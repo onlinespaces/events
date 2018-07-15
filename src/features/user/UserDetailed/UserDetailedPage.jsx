@@ -4,6 +4,7 @@ import { firestoreConnect, isEmpty } from 'react-redux-firebase';
 import {compose} from 'redux';
 import {Grid} from "semantic-ui-react";
 import { userDetailedQuery } from '../userQueries';
+import LoadingComponent from '../../../app/layout/LoadingComponent';
 import UserDetailedHeader from './UserDetailedHeader';
 import UserDetailedDescription from './UserDetailedDescription';
 import UserDetailedPhotos from './UserDetailedPhotos';
@@ -12,8 +13,11 @@ import UserDetailedEvents from './UserDetailedEvents';
 
 class UserDetailedPage extends Component {
     render() {
-        const { photos, profile, auth, match } = this.props;
+        const { photos, profile, auth, match, requesting } = this.props;
         const isCurrentUser = auth.uid === match.params.id;
+        const loading = Object.values(requesting).some(a => a === true);
+
+        if(loading) return <LoadingComponent inverted={true}/>;
         return (
             <Grid>
                 <Grid.Column width={16}>
@@ -53,7 +57,8 @@ const mapState = (state, ownProps) => {
         profile,
         userUid,
         photos: state.firestore.ordered.photos,
-        auth: state.firebase.auth
+        auth: state.firebase.auth,
+        requesting: state.firestore.status.requesting
     }
 };
 
