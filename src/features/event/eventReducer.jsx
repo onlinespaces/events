@@ -21,7 +21,7 @@ export const deleteEvent = (state, payload) => {
 
 export const fetchEvents = (state, payload) => {
     return payload.events;
-}
+};
 
 export default createReducer(initialState, {
         [CREATE_EVENT]: createEvent,
