@@ -19,7 +19,7 @@ const mapState = (state) => ({
     // Could do it this way
     //providerId: state.firebase.auth.isLoaded && state.firebase.auth.providerData[0].providerId
     providerId: state.firebase.auth.providerData[0].providerId,
-    user: state.firebase.profile
+    user: state.firebase.profil
 });
 
 const SettingsDashboard = ({updatePassword, providerId, user, updateProfile}) => {
