@@ -18,8 +18,12 @@ const actions = {
 
 class UserDetailedPage extends Component {
     async componentDidMount() {
-        let events = await this.props.getUserEvents(this.props.userUid);
+        await this.props.getUserEvents(this.props.userUid);
     }
+
+    changeTab = (e, data) => {
+        this.props.getUserEvents(this.props.userUid, data.activeIndex);
+    };
 
     render() {
         const {events, eventsLoading, photos, profile, auth, match, requesting } = this.props;
@@ -44,7 +48,7 @@ class UserDetailedPage extends Component {
                     </Grid.Column>
                 }
                 <Grid.Column width={12}>
-                    <UserDetailedEvents events={events} eventsLoading={eventsLoading}/>
+                    <UserDetailedEvents events={events} eventsLoading={eventsLoading} changeTab={this.changeTab}/>
                 </Grid.Column>
             </Grid>
 
