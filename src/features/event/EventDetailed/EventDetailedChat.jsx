@@ -61,10 +61,41 @@ class EventDetailedChat extends Component {
                                                 addEventComment={addEventComment}
                                                 form={`reply_${comment.id}`}
                                                 closeForm={this.handleCloseReplyForm}
+                                                parentId={comment.id}
                                             />
                                         }
                                     </Comment.Actions>
                                 </Comment.Content>
+                                {comment.childNodes && comment.childNodes.map(child => (
+                                    <Comment.Group key={child.id}>
+                                        <Comment>
+                                            <Comment.Avatar src={child.photoURL || "/assets/user.png"}/>
+                                            <Comment.Content>
+                                                <Comment.Author
+                                                    as={Link}
+                                                    to={`/profile/${child.uid}`}
+                                                >{child.displayName}</Comment.Author>
+                                                <Comment.Metadata>
+                                                    <div>{distanceInWords(child.date, Date.now())} ago</div>
+                                                </Comment.Metadata>
+                                                <Comment.Text>{child.text}</Comment.Text>
+                                                {/*<Comment.Actions>*/}
+                                                    {/*<Comment.Action*/}
+                                                        {/*onClick={this.handleOpenReplyForm(child.id)}>Reply</Comment.Action>*/}
+                                                    {/*{showReplyForm && selectedCommentId === child.id &&*/}
+                                                    {/*<EventDetailedChatForm*/}
+                                                        {/*eventId={eventId}*/}
+                                                        {/*addEventComment={addEventComment}*/}
+                                                        {/*form={`reply_${child.id}`}*/}
+                                                        {/*closeForm={this.handleCloseReplyForm}*/}
+                                                        {/*parentId={child.parentId}*/}
+                                                    {/*/>*/}
+                                                    {/*}*/}
+                                                {/*</Comment.Actions>*/}
+                                            </Comment.Content>
+                                        </Comment>
+                                    </Comment.Group>
+                                ))}
                             </Comment>
                         ))}
                     </Comment.Group>
@@ -72,6 +103,7 @@ class EventDetailedChat extends Component {
                         eventId={eventId}
                         addEventComment={addEventComment}
                         form={'newComment'}
+                        parentId={0}
                     />
                 </Segment>
             </div>

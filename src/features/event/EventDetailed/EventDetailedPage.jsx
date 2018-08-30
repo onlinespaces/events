@@ -7,7 +7,7 @@ import EventDetailedHeader from './EventDetailedHeader';
 import EventDetailedChat from './EventDetailedChat';
 import EventDetailedInfo from './EventDetailedInfo';
 import EventDetailedSidebar from './EventDetailedSidebar';
-import {objectToArray} from '../../../app/common/util/helpers';
+import {createDataTree, objectToArray} from '../../../app/common/util/helpers';
 import {goingToEvent, cancelGoingToEvent} from '../../user/userActions';
 import {addEventComment} from '../eventActions';
 
@@ -48,6 +48,7 @@ class EventDetailedPage extends Component {
         const attendees = event && event.attendees && objectToArray(event.attendees);
         const isHost = event && event.hostUid === auth.uid;
         const isGoing = attendees && attendees.some(a => a.id === auth.uid);
+        const chatTree = !isEmpty(eventChat) && createDataTree(eventChat);
         return (
             <Grid>
                 <Grid.Column width={10}>
@@ -56,7 +57,7 @@ class EventDetailedPage extends Component {
                                          cancelGoingToEvent={cancelGoingToEvent}/>
                     <EventDetailedInfo event={event}/>
                     <EventDetailedChat
-                        eventChat={eventChat}
+                        eventChat={chatTree}
                         addEventComment={addEventComment}
                         eventId={event.id}/>
                 </Grid.Column>
