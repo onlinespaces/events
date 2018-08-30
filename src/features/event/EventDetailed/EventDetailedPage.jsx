@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { withFirestore } from 'react-redux-firebase';
+import { withFirestore, firebaseConnect } from 'react-redux-firebase';
+import {compose} from 'redux';
 import { Grid }  from 'semantic-ui-react';
 import EventDetailedHeader from './EventDetailedHeader';
 import EventDetailedChat from './EventDetailedChat';
@@ -8,12 +9,15 @@ import EventDetailedInfo from './EventDetailedInfo';
 import EventDetailedSidebar from './EventDetailedSidebar';
 import {objectToArray} from '../../../app/common/util/helpers';
 import {goingToEvent, cancelGoingToEvent} from '../../user/userActions';
+import {addEventComment} from '../eventActions';
 
 const mapState = (state) => {
     let event = {};
 
     if(state.firestore.ordered.events && state.firestore.ordered.events[0]) {
         event = state.firestore.ordered.events[0];
+        console.log('E');
+        console.log(event);
     }
 
     return {
@@ -24,25 +28,31 @@ const mapState = (state) => {
 
 const actions = {
     goingToEvent,
-    cancelGoingToEvent
+    cancelGoingToEvent,
+    addEventComment
 };
 
 class EventDetailedPage extends Component {
-
     async componentDidMount() {
         const {firestore, match} = this.props;
-        await firestore.setListener(`events/${match.params.id}`);
+        console.log('E3');
+        console.log(match.params.id);
+        await firestore.setListener(`/event/${match.params.id}`);
     }
 
     async componentWillUnmount() {
         const {firestore, match} = this.props;
-        await firestore.unsetListener(`events/${match.params.id}`);
+        await firestore.unsetListener(`/event/${match.params.id}`);
     }
 
     render() {
-        const {event, auth, goingToEvent, cancelGoingToEvent} = this.props;
+        const {event, auth, goingToEvent, cancelGoingToEvent, addEventComment} = this.props;
+
+        console.log('E2');
+        console.log(event);
+
         const attendees = event && event.attendees && objectToArray(event.attendees);
-        const isHost = event.hostUid === auth.uid;
+        const isHost = event && event.hostUid === auth.uid;
         const isGoing = attendees && attendees.some(a => a.id === auth.uid);
         return (
             <Grid>
@@ -51,7 +61,7 @@ class EventDetailedPage extends Component {
                                          goingToEvent={goingToEvent}
                                          cancelGoingToEvent={cancelGoingToEvent}/>
                     <EventDetailedInfo event={event}/>
-                    <EventDetailedChat/>
+                    <EventDetailedChat addEventComment={addEventComment}/>
                 </Grid.Column>
                 <Grid.Column width={6}>
                     <EventDetailedSidebar attendees={attendees}/>
@@ -61,4 +71,8 @@ class EventDetailedPage extends Component {
     }
 }
 
-export default withFirestore(connect(mapState, actions)(EventDetailedPage));
+export default compose(
+    withFirestore,
+    connect(mapState, actions),
+    firebaseConnect((props) => ([`event_chat/${props.match.params.id}`]))
+) (EventDetailedPage);

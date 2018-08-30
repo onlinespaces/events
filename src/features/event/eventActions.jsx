@@ -1,6 +1,6 @@
 import { toastr } from 'react-redux-toastr';
 import moment from 'moment';
-import { FETCH_EVENTS} from "./eventConstants";
+import {FETCH_EVENTS} from "./eventConstants";
 import { asyncActionError, asyncActionStart, asyncActionFinish } from "../async/asyncActions";
 import { createNewEvent } from '../../app/common/util/helpers';
 import firebase from '../../app/config/firebase';
@@ -101,5 +101,15 @@ export const getEventsForDashboard = (lastEvent) =>
         } catch(error) {
             console.log(error);
             dispatch(asyncActionError());
+        }
+    };
+
+export const addEventComment = (eventId, comment) =>
+    async (dispatch, getState, {getFirebase}) => {
+        const firebase = getFirebase();
+        try {
+            await firebase.push(`event_chat/${eventId}`, comment);
+        } catch(error) {
+            toastr.error('Error', 'An error occurred adding comments.');
         }
     };
