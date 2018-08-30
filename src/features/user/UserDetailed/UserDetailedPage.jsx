@@ -1,36 +1,64 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
+import { Grid } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { firestoreConnect, isEmpty } from 'react-redux-firebase';
-import {compose} from 'redux';
-import {Grid} from "semantic-ui-react";
-import { userDetailedQuery } from '../userQueries';
-import LoadingComponent from '../../../app/layout/LoadingComponent';
-import UserDetailedHeader from './UserDetailedHeader';
-import UserDetailedDescription from './UserDetailedDescription';
-import UserDetailedPhotos from './UserDetailedPhotos';
-import UserDetailedSidebar from './UserDetailedSidebar';
-import UserDetailedEvents from './UserDetailedEvents';
-import {getUserEvents} from '../userActions';
+import { compose } from 'redux'
+import UserDetailedHeader from './UserDetailedHeader'
+import UserDetailedDescription from './UserDetailedDescription'
+import UserDetailedPhotos from './UserDetailedPhotos'
+import UserDetailedSidebar from './UserDetailedSidebar'
+import UserDetailedEvents from './UserDetailedEvents'
+import { userDetailedQuery } from '../userQueries'
+import LoadingComponent from '../../../app/layout/LoadingComponent'
+import { getUserEvents, followUser, unfollowUser } from '../userActions'
+
+const mapState = (state, ownProps) => {
+    let userUid = null;
+    let profile = {};
+
+    if (ownProps.match.params.id === state.auth.uid) {
+        profile = state.firebase.profile
+    } else {
+        profile = !isEmpty(state.firestore.ordered.profile) && state.firestore.ordered.profile[0];
+        userUid = ownProps.match.params.id;
+    }
+    return {
+        profile,
+        userUid,
+        events: state.events,
+        eventsLoading: state.async.loading,
+        auth: state.firebase.auth,
+        photos: state.firestore.ordered.photos,
+        requesting: state.firestore.status.requesting,
+        following: state.firestore.ordered.following
+    }
+}
 
 const actions = {
-    getUserEvents
+    getUserEvents,
+    followUser,
+    unfollowUser
 };
 
 class UserDetailedPage extends Component {
+
     async componentDidMount() {
-        await this.props.getUserEvents(this.props.userUid);
+        let events = await this.props.getUserEvents(this.props.userUid);
+        console.log(events);
     }
 
     changeTab = (e, data) => {
-        this.props.getUserEvents(this.props.userUid, data.activeIndex);
+        this.props.getUserEvents(this.props.userUid, data.activeIndex)
     };
 
     render() {
-        const {events, eventsLoading, photos, profile, auth, match, requesting } = this.props;
+        const {profile, photos, auth, match, requesting, events, eventsLoading, followUser, following, unfollowUser} = this.props;
         const isCurrentUser = auth.uid === match.params.id;
         const loading = Object.values(requesting).some(a => a === true);
+        const isFollowing = !isEmpty(following);
 
-        if(loading) return <LoadingComponent inverted={true}/>;
+        if (loading) return <LoadingComponent inverted={true}/>;
+
         return (
             <Grid>
                 <Grid.Column width={16}>
@@ -40,7 +68,12 @@ class UserDetailedPage extends Component {
                     <UserDetailedDescription profile={profile}/>
                 </Grid.Column>
                 <Grid.Column width={4}>
-                    <UserDetailedSidebar isCurrentUser={isCurrentUser }/>
+                    <UserDetailedSidebar
+                        unfollowUser={unfollowUser}
+                        isFollowing={isFollowing}
+                        profile={profile}
+                        followUser={followUser}
+                        isCurrentUser={isCurrentUser}/>
                 </Grid.Column>
                 {photos &&
                     <Grid.Column width={12}>
@@ -48,7 +81,10 @@ class UserDetailedPage extends Component {
                     </Grid.Column>
                 }
                 <Grid.Column width={12}>
-                    <UserDetailedEvents events={events} eventsLoading={eventsLoading} changeTab={this.changeTab}/>
+                    <UserDetailedEvents
+                        events={events}
+                        eventsLoading={eventsLoading}
+                        changeTab={this.changeTab}/>
                 </Grid.Column>
             </Grid>
 
@@ -56,28 +92,7 @@ class UserDetailedPage extends Component {
     }
 }
 
-const mapState = (state, ownProps) => {
-    let userUid = null;
-    let profile = {};
-
-    if(ownProps.match.params.id === state.auth.id) {
-        profile = state.firebase.profile;
-    } else {
-        profile = !isEmpty(state.firestore.ordered.profile) && state.firestore.ordered.profile[0];
-        userUid = ownProps.match.params.id;
-    }
-    return {
-        profile,
-        userUid,
-        photos: state.firestore.ordered.photos,
-        auth: state.firebase.auth,
-        requesting: state.firestore.status.requesting,
-        events: state.events,
-        eventsLoading: state.async.loading,
-    }
-};
-
 export default compose(
     connect(mapState, actions),
-    firestoreConnect((auth, userUid) => userDetailedQuery(auth, userUid))
+    firestoreConnect((auth, userUid, match) => userDetailedQuery(auth, userUid, match)),
 )(UserDetailedPage);
