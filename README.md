@@ -1,3 +1,9 @@
+## Revents
+
+This is an events management application built with ReactJS and using firestorm and firebase for the database.
+
+## Project
+
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 Below you will find some information on how to perform common tasks.<br>
